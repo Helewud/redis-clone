@@ -115,8 +115,8 @@ func TestReader_readBulk(t *testing.T) {
 			name:  "simple bulk string",
 			input: "5\r\nhello\r\n",
 			want: Value{
-				t:    RespTBulk,
-				bulk: "hello",
+				T:    RespTBulk,
+				Bulk: "hello",
 			},
 			wantErr: false,
 		},
@@ -124,8 +124,8 @@ func TestReader_readBulk(t *testing.T) {
 			name:  "empty bulk string",
 			input: "0\r\n\r\n",
 			want: Value{
-				t:    RespTBulk,
-				bulk: "",
+				T:    RespTBulk,
+				Bulk: "",
 			},
 			wantErr: false,
 		},
@@ -158,10 +158,10 @@ func TestReader_readArray(t *testing.T) {
 			name:  "simple array",
 			input: "2\r\n$5\r\nhello\r\n$5\r\nworld\r\n",
 			want: Value{
-				t: RespTArray,
-				array: []Value{
-					{t: RespTBulk, bulk: "hello"},
-					{t: RespTBulk, bulk: "world"},
+				T: RespTArray,
+				Array: []Value{
+					{T: RespTBulk, Bulk: "hello"},
+					{T: RespTBulk, Bulk: "world"},
 				},
 			},
 			wantErr: false,
@@ -170,7 +170,7 @@ func TestReader_readArray(t *testing.T) {
 			name:  "empty array",
 			input: "0\r\n",
 			want: Value{
-				t: RespTArray,
+				T: RespTArray,
 			},
 			wantErr: false,
 		},
@@ -178,13 +178,13 @@ func TestReader_readArray(t *testing.T) {
 			name:  "nested array",
 			input: "2\r\n$5\r\nhello\r\n*1\r\n$5\r\nworld\r\n",
 			want: Value{
-				t: RespTArray,
-				array: []Value{
-					{t: RespTBulk, bulk: "hello"},
+				T: RespTArray,
+				Array: []Value{
+					{T: RespTBulk, Bulk: "hello"},
 					{
-						t: RespTArray,
-						array: []Value{
-							{t: RespTBulk, bulk: "world"},
+						T: RespTArray,
+						Array: []Value{
+							{T: RespTBulk, Bulk: "world"},
 						},
 					},
 				},
@@ -220,8 +220,8 @@ func TestReader_Read(t *testing.T) {
 			name:  "read bulk string",
 			input: string(RespBulk) + "5\r\nhello\r\n",
 			want: Value{
-				t:    RespTBulk,
-				bulk: "hello",
+				T:    RespTBulk,
+				Bulk: "hello",
 			},
 			wantErr: false,
 		},
@@ -229,10 +229,10 @@ func TestReader_Read(t *testing.T) {
 			name:  "read array",
 			input: string(RespArray) + "2\r\n$5\r\nhello\r\n$5\r\nworld\r\n",
 			want: Value{
-				t: RespTArray,
-				array: []Value{
-					{t: RespTBulk, bulk: "hello"},
-					{t: RespTBulk, bulk: "world"},
+				T: RespTArray,
+				Array: []Value{
+					{T: RespTBulk, Bulk: "hello"},
+					{T: RespTBulk, Bulk: "world"},
 				},
 			},
 			wantErr: false,

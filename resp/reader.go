@@ -46,7 +46,7 @@ func (r *Reader) parseInteger() (value int, err error) {
 }
 
 func (r *Reader) readArray() (Value, error) {
-	v := Value{t: RespTArray}
+	v := Value{T: RespTArray}
 
 	// get array length
 	len, err := r.parseInteger()
@@ -62,7 +62,7 @@ func (r *Reader) readArray() (Value, error) {
 		}
 
 		// append parsed value to array
-		v.array = append(v.array, val)
+		v.Array = append(v.Array, val)
 	}
 
 	return v, nil
@@ -70,7 +70,7 @@ func (r *Reader) readArray() (Value, error) {
 
 func (r *Reader) readBulk() (Value, error) {
 	v := Value{
-		t: RespTBulk,
+		T: RespTBulk,
 	}
 
 	// get bulk char length
@@ -83,7 +83,7 @@ func (r *Reader) readBulk() (Value, error) {
 
 	r.reader.Read(bulk)
 
-	v.bulk = string(bulk)
+	v.Bulk = string(bulk)
 
 	// remove CRLF from line
 	r.readLine()
@@ -103,7 +103,7 @@ func (r *Reader) Read() (Value, error) {
 	case RespBulk:
 		return r.readBulk()
 	default:
-		fmt.Printf("Unknown resp type symbol: %v", string(symbol))
+		fmt.Printf("Unknown resptype symbol: %v", string(symbol))
 		return Value{}, nil
 	}
 }

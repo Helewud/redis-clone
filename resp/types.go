@@ -22,9 +22,9 @@ const (
 )
 
 type Value struct {
-	t     Type
-	str   string
-	num   int
-	bulk  string
-	array []Value
+	T      Type
+	String string
+	Number int
+	Bulk   string
+	Array  []Value
 }
