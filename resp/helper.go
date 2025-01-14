@@ -12,3 +12,8 @@ func trimEndOfLine(line []byte) []byte {
 	}
 	return line
 }
+
+// Adds the trailing CRLF sequence
+func appendEndOfLine(line []byte) []byte {
+	return append(line, '\r', '\n')
+}

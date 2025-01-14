@@ -64,3 +64,31 @@ func TestTrimEndOfLine(t *testing.T) {
 		})
 	}
 }
+
+func TestAppendEndOfLine(t *testing.T) {
+	tests := []struct {
+		name  string
+		input []byte
+		want  []byte
+	}{
+		{
+			name:  "append end of line",
+			input: []byte("start"),
+			want:  []byte("start\r\n"),
+		},
+		{
+			name:  "append end of line if  it exist",
+			input: []byte("start\r\n"),
+			want:  []byte("start\r\n\r\n"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := appendEndOfLine(tt.input)
+			if !bytes.Equal(got, tt.want) {
+				t.Errorf("appendEndOfLine(%s) = %v, want %v", tt.input, got, tt.want)
+			}
+		})
+	}
+}
