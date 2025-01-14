@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"net"
-	"os"
+
+	"github.com/helewud/redis-clone/resp"
 )
 
 func main() {
@@ -30,19 +30,17 @@ func main() {
 			defer conn.Close()
 
 			for {
-				buf := make([]byte, 1024)
-
-				// read message from client
-				_, err = conn.Read(buf)
+				reader := resp.NewReader(conn)
+				value, err := reader.Read()
 				if err != nil {
-					if err == io.EOF {
-						break
-					}
-					fmt.Println("error reading from client: ", err.Error())
-					os.Exit(1)
+					fmt.Println(err)
+					return
 				}
 
-				// ignore request and send back a PONG
+				// print value to terminal
+				fmt.Println(value)
+
+				// ignore request and send back a OKK
 				conn.Write([]byte("+OKK\r\n"))
 			}
 		}(conn)
