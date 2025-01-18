@@ -64,3 +64,25 @@ func get(args []resp.Value) resp.Value {
 
 	return res
 }
+
+func del(args []resp.Value) resp.Value {
+	if len(args) != 1 {
+		return resp.Value{
+			T:      resp.RespTError,
+			String: "ERR wrong number of arguments for 'DEL' command",
+		}
+	}
+
+	key := args[0].Bulk
+	res := resp.Value{T: resp.RespTNull}
+
+	SETsMu.RLock()
+	if _, ok := SETs[key]; ok {
+		delete(SETs, key)
+		res.T = resp.RespTString
+		res.String = "OK"
+	}
+	SETsMu.RUnlock()
+
+	return res
+}

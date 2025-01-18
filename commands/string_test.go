@@ -124,3 +124,126 @@ func TestSetAndGet(t *testing.T) {
 		})
 	}
 }
+
+func TestSetAndDel(t *testing.T) {
+
+	tests := []struct {
+		name     string
+		scenario string
+
+		setArgs []resp.Value
+		wantSet resp.Value
+
+		delArgs []resp.Value
+		wantDel resp.Value
+
+		getArgs []resp.Value
+		wantGet resp.Value
+	}{
+		{
+			name:     "simple set and del",
+			scenario: "success",
+
+			setArgs: []resp.Value{
+				{T: resp.RespTBulk, Bulk: "key1"},
+				{T: resp.RespTBulk, Bulk: "resp.value1"},
+			},
+			wantSet: resp.Value{T: resp.RespTString, String: "OK"},
+
+			delArgs: []resp.Value{
+				{T: resp.RespTBulk, Bulk: "key1"},
+			},
+			wantDel: resp.Value{T: resp.RespTString, String: "OK"},
+		},
+		{
+			name:     "simple set, del and get",
+			scenario: "del_and_get",
+
+			setArgs: []resp.Value{
+				{T: resp.RespTBulk, Bulk: "key1"},
+				{T: resp.RespTBulk, Bulk: "resp.value1"},
+			},
+			wantSet: resp.Value{T: resp.RespTString, String: "OK"},
+
+			delArgs: []resp.Value{
+				{T: resp.RespTBulk, Bulk: "key1"},
+			},
+			wantDel: resp.Value{T: resp.RespTString, String: "OK"},
+
+			getArgs: []resp.Value{
+				{T: resp.RespTBulk, Bulk: "key1"},
+			},
+			wantGet: resp.Value{T: resp.RespTNull},
+		},
+		{
+			name:     "del non-existent key",
+			scenario: "del_only",
+
+			delArgs: []resp.Value{
+				{T: resp.RespTBulk, Bulk: "nonexistent"},
+			},
+			wantDel: resp.Value{T: resp.RespTNull},
+		},
+		{
+			name:     "del with wrong args",
+			scenario: "del_error",
+
+			delArgs: []resp.Value{
+				{T: resp.RespTBulk, Bulk: "key1"},
+				{T: resp.RespTBulk, Bulk: "extra"},
+			},
+
+			wantDel: resp.Value{
+				T:      resp.RespTError,
+				String: "ERR wrong number of arguments for 'DEL' command",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		// Clear the map before testing
+		SETs = map[string]string{}
+
+		t.Run(tt.name, func(t *testing.T) {
+			switch tt.scenario {
+			case "success":
+				got := set(tt.setArgs)
+				if !reflect.DeepEqual(got, tt.wantSet) {
+					t.Errorf("set() = %v, want %v", got, tt.wantSet)
+				}
+				got = del(tt.delArgs)
+				if !reflect.DeepEqual(got, tt.wantDel) {
+					t.Errorf("del() = %v, want %v", got, tt.wantDel)
+				}
+			case "del_only":
+				got := del(tt.delArgs)
+				if !reflect.DeepEqual(got, tt.wantDel) {
+					t.Errorf("del() = %v, want %v", got, tt.wantDel)
+				}
+			case "del_and_get":
+				got := set(tt.setArgs)
+				if !reflect.DeepEqual(got, tt.wantSet) {
+					t.Errorf("set() = %v, want %v", got, tt.wantSet)
+				}
+				got = del(tt.delArgs)
+				if !reflect.DeepEqual(got, tt.wantDel) {
+					t.Errorf("del() = %v, want %v", got, tt.wantDel)
+				}
+				got = get(tt.delArgs)
+				if !reflect.DeepEqual(got, tt.wantGet) {
+					t.Errorf("del() = %v, want %v", got, tt.wantGet)
+				}
+			case "set_error":
+				got := set(tt.setArgs)
+				if !reflect.DeepEqual(got, tt.wantSet) {
+					t.Errorf("set() = %v, want %v", got, tt.wantSet)
+				}
+			case "del_error":
+				got := del(tt.delArgs)
+				if !reflect.DeepEqual(got, tt.wantDel) {
+					t.Errorf("del() = %v, want %v", got, tt.wantDel)
+				}
+			}
+		})
+	}
+}
