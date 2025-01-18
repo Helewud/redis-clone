@@ -103,7 +103,7 @@ func (r *Reader) Read() (Value, error) {
 	case RespBulk:
 		return r.readBulk()
 	default:
-		fmt.Printf("Unknown resptype symbol: %v", string(symbol))
+		fmt.Printf("unknown resptype symbol: %v", string(symbol))
 		return Value{}, nil
 	}
 }
